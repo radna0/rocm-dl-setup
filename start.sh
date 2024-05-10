@@ -1,21 +1,20 @@
 #!/bin/bash
+cd ~
 
 # Update package lists and install required packages
-sudo apt update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+sudo apt update && sudo apt upgrade
+sudo apt install -y --no-install-recommends \
   ca-certificates \
   nano \
   wget \
   curl \
-  gnupg \
-  ripgrep \
-  ltrace \
-  file \
   python3-minimal \
   build-essential \
   git \
   cmake \
   ninja-build
+
+sudo apt update && sudo apt upgrade
 
 # Set environment variables
 export PATH="${PATH}:/opt/rocm/bin:/opt/rocm/llvm/bin:/usr/local/cuda/bin/"
@@ -37,6 +36,8 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   libcublas-dev-${CUDA_VERSION} \
   cuda-nvml-dev-${CUDA_VERSION} \
   libcudnn8-dev
+  
+sudo apt update && sudo apt upgrade
 
 # Set Rust version
 RUST_VERSION=1.66.1
@@ -44,6 +45,8 @@ RUST_VERSION=1.66.1
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=${RUST_VERSION}
 source $HOME/.cargo/env && cargo install bindgen-cli --locked
+
+sudo apt update && sudo apt upgrade
 
 # Set ROCM version
 ROCM_VERSION=5.7.3
@@ -53,8 +56,8 @@ echo "Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600" | sudo tee 
 sudo mkdir -p /etc/apt/keyrings
 wget -O - https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${ROCM_VERSION} jammy main" | sudo tee /etc/apt/sources.list.d/rocm.list
-sudo apt update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+sudo apt update && sudo apt upgrade
+sudo apt install -y --no-install-recommends \
   rocminfo \
   rocm-gdb \
   rocprofiler \
@@ -72,8 +75,10 @@ echo 'export PATH="$PATH:/opt/rocm/bin"' | sudo tee /etc/profile.d/rocm.sh
 echo '/opt/rocm/lib' | sudo tee /etc/ld.so.conf.d/rocm.conf
 sudo ldconfig
 
+
+sudo apt update && sudo apt upgrade
+
 # Install Anaconda
-cd /tmp
 curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
 bash Anaconda3-2023.09-0-Linux-x86_64.sh -b -p $HOME/anaconda3
 export PATH="$HOME/anaconda3/bin:$PATH"
@@ -82,9 +87,13 @@ conda init bash
 conda info
 conda update conda
 
+sudo apt update && sudo apt upgrade
+
 # Install CUDA Toolkit
 wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
 sudo sh cuda_11.8.0_520.61.05_linux.run --silent --toolkit --toolkitpath=/usr/local/cuda
+
+sudo apt update && sudo apt upgrade
 
 # Clone Zluda
 git clone https://github.com/vosen/ZLUDA.git
@@ -96,7 +105,7 @@ cargo xtask --release
 ZLUDA_DIRECTORY="/ZLUDA/target/release"
 
 # Clone PyTorch
-cd /tmp
+cd ~
 git clone https://github.com/pytorch/pytorch
 cd pytorch
 git submodule sync
