@@ -49,40 +49,29 @@ source $HOME/.cargo/env && cargo install bindgen-cli --locked
 sudo apt update -y && sudo apt upgrade -y
 
 # Set ROCM version
-ROCM_VERSION=5.7.3
+ROCM_VERSION=5.7.1
 
 # Install ROCM packages
 echo "Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600" | sudo tee /etc/apt/preferences.d/rocm-pin-600
 sudo mkdir -p /etc/apt/keyrings
-wget -O - https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${ROCM_VERSION} jammy main" | sudo tee /etc/apt/sources.list.d/rocm.list
+sudo apt install "linux-headers-$(uname -r)" "linux-modules-extra-$(uname -r)"
 sudo apt update -y && sudo apt upgrade -y
-sudo apt install -y --no-install-recommends \
-  rocminfo \
-  rocm-gdb \
-  rocprofiler \
-  rocm-smi-lib \
-  hip-runtime-amd \
-  comgr \
-  hipblaslt-dev \
-  hipfft-dev \
-  rocblas-dev \
-  rocsolver-dev \
-  rocsparse-dev \
-  miopen-hip-dev \
-  rocm-device-libs
+wget https://repo.radeon.com/amdgpu-install/${ROCM_VERSION}/ubuntu/jammy/amdgpu-install_5.7.50701-1_all.deb
+sudo apt install -y ./amdgpu-install_5.7.50701-1_all.deb
+sudo amdgpu-install --usecase=workstation,rocm,opencl
 echo 'export PATH="$PATH:/opt/rocm/bin"' | sudo tee /etc/profile.d/rocm.sh
 echo '/opt/rocm/lib' | sudo tee /etc/ld.so.conf.d/rocm.conf
 sudo ldconfig
-
 
 sudo apt update -y && sudo apt upgrade -y
 
 # Install Anaconda
 curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
 bash Anaconda3-2023.09-0-Linux-x86_64.sh -b -p $HOME/anaconda3
 export PATH="$HOME/anaconda3/bin:$PATH"
 source $HOME/anaconda3/etc/profile.d/conda.sh
+source ~/.bashrc
 conda init bash
 conda info
 conda update conda
