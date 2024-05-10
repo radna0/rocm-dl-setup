@@ -2,7 +2,7 @@
 cd ~
 
 # Update package lists and install required packages
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 sudo apt install -y --no-install-recommends \
   ca-certificates \
   nano \
@@ -14,7 +14,7 @@ sudo apt install -y --no-install-recommends \
   cmake \
   ninja-build
 
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 # Set environment variables
 export PATH="${PATH}:/opt/rocm/bin:/opt/rocm/llvm/bin:/usr/local/cuda/bin/"
@@ -25,7 +25,7 @@ CUDA_VERSION=11-8
 # Install NVIDIA CUDA packages
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
 sudo dpkg -i cuda-keyring_1.0-1_all.deb
-sudo apt update
+sudo apt update -y && sudo apt upgrade -y
 sudo apt install -y --no-install-recommends \
   nvidia-headless-no-dkms-515 \
   nvidia-utils-515 \
@@ -37,7 +37,7 @@ sudo apt install -y --no-install-recommends \
   cuda-nvml-dev-${CUDA_VERSION} \
   libcudnn8-dev
   
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 # Set Rust version
 RUST_VERSION=1.66.1
@@ -46,7 +46,7 @@ RUST_VERSION=1.66.1
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=${RUST_VERSION}
 source $HOME/.cargo/env && cargo install bindgen-cli --locked
 
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 # Set ROCM version
 ROCM_VERSION=5.7.3
@@ -56,7 +56,7 @@ echo "Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600" | sudo tee 
 sudo mkdir -p /etc/apt/keyrings
 wget -O - https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${ROCM_VERSION} jammy main" | sudo tee /etc/apt/sources.list.d/rocm.list
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 sudo apt install -y --no-install-recommends \
   rocminfo \
   rocm-gdb \
@@ -76,7 +76,7 @@ echo '/opt/rocm/lib' | sudo tee /etc/ld.so.conf.d/rocm.conf
 sudo ldconfig
 
 
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 # Install Anaconda
 curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
@@ -87,13 +87,13 @@ conda init bash
 conda info
 conda update conda
 
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 # Install CUDA Toolkit
 wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
 sudo sh cuda_11.8.0_520.61.05_linux.run --silent --toolkit --toolkitpath=/usr/local/cuda
 
-sudo apt update && sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 # Clone Zluda
 git clone https://github.com/vosen/ZLUDA.git
