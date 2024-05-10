@@ -26,7 +26,7 @@ CUDA_VERSION=11-8
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
 sudo dpkg -i cuda-keyring_1.0-1_all.deb
 sudo apt update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+sudo apt install -y --no-install-recommends \
   nvidia-headless-no-dkms-515 \
   nvidia-utils-515 \
   cuda-cudart-${CUDA_VERSION} \
