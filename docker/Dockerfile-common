@@ -31,16 +31,14 @@ RUN dpkg -i cuda-keyring_1.0-1_all.deb && \
   libcusparse-dev-${CUDA_VERSION} \
   libcublas-dev-${CUDA_VERSION} \
   cuda-nvml-dev-${CUDA_VERSION} \
-  libcudnn8-dev
-
-RUN wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
-
-RUN chmod +x cuda_11.8.0_520.61.05_linux.run && \
-  sh cuda_11.8.0_520.61.05_linux.run --silent --toolkit --toolkitpath=/usr/local/cuda
+  libcudnn8-dev \
+  cuda-toolkit-${CUDA_VERSION}
 
 ARG RUST_VERSION=1.66.1
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=${RUST_VERSION}
-RUN . $HOME/.cargo/env && cargo install bindgen-cli --locked
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=${RUST_VERSION} && \
+   . $HOME/.cargo/env && \
+   cargo install bindgen-cli --locked
+   
 
 ARG ROCM_VERSION=5.7.3
 RUN echo "Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600" > /etc/apt/preferences.d/rocm-pin-600
@@ -66,20 +64,25 @@ RUN mkdir --parents --mode=0755 /etc/apt/keyrings && \
   ldconfig
 
 
-# Install Anaconda
-RUN curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh && \
-    chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh && \
-    bash Anaconda3-2023.09-0-Linux-x86_64.sh -b -p $HOME/anaconda3 && \
-    export PATH="$HOME/anaconda3/bin:$PATH" && \
-    source $HOME/anaconda3/etc/profile.d/conda.sh && \
-    source ~/.bashrc && \
-    conda init bash && \
-    conda update conda
 
 # Install Zluda
-RUN git clone https://github.com/vosen/ZLUDA.git $HOME/ZLUDA && \
+RUN git clone --recurse-submodules https://github.com/vosen/ZLUDA.git $HOME/ZLUDA && \
     cd $HOME/ZLUDA && \
-    cargo xtask --release
+    $HOME/.cargo/bin/cargo xtask --release
+
+
+# Install Miniconda
+RUN sh -c "wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" && \
+    chmod +x Miniconda3-latest-Linux-x86_64.sh && \
+    sh Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda3 && \
+    echo 'export PATH="$HOME/miniconda3"' >> $HOME/.bashrc && \
+    . $HOME/miniconda3/etc/profile.d/conda.sh && \
+    . $HOME/.bashrc && \
+    conda --version 
+
+RUN apt-get install -y python3-pip && \
+    pip --version
+   
 
 # Install PyTorch
 RUN git clone https://github.com/pytorch/pytorch $HOME/pytorch && \
@@ -94,9 +97,22 @@ RUN git clone https://github.com/pytorch/pytorch $HOME/pytorch && \
     export USE_NCCL=0 && \
     export USE_EXPERIMENTAL_CUDNN_V8_API=OFF && \
     export DISABLE_ADDMM_CUDA_LT=1 && \
-    export USE_ROCM=0 && \
-    LD_LIBRARY_PATH="$HOME/ZLUDA/target/release:$LD_LIBRARY_PATH" python setup.py develop
+    export USE_ROCM=0 
 
+RUN cd $HOME/pytorch && \
+    . $HOME/miniconda3/etc/profile.d/conda.sh && \
+    . $HOME/.bashrc && \ 
+    conda install -y cmake ninja 
+
+#RUN cd $HOME/pytorch && \
+#    pip install -r requirements.txt && \
+#    LD_LIBRARY_PATH="$HOME/ZLUDA/target/release:$LD_LIBRARY_PATH" python3 setup.py develop
+
+#cleanup
+RUN rm cuda-keyring_1.0-1_all.deb Miniconda3-latest-Linux-x86_64.sh && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/* tmp/* /var/tmp/*
 
 # Default to a login shell
 CMD ["bash", "-l"]
