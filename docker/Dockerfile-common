@@ -112,8 +112,7 @@ RUN cd $HOME/pytorch && \
 #cleanup
 RUN rm cuda-keyring_1.0-1_all.deb Miniconda3-latest-Linux-x86_64.sh && \
     apt-get autoclean -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* tmp/* /var/tmp/*
+    apt-get autoremove -y
 
 # Default to a login shell
 CMD ["bash", "-l"]
