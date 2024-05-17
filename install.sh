@@ -40,12 +40,17 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     libcudnn8-dev \
     cuda-toolkit-${CUDA_VERSION} \
     cudnn9-cuda-${CUDA_VERSION}
-    
+
+export CUDA_HOME=/usr/local/cuda-11.8
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64:/usr/local/cuda/extras/CUPTI/lib64
+export PATH=$PATH:$CUDA_HOME/bin
+
+
 # Install Rust
 RUST_VERSION="1.66.1"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sudo sh -s -- -y --default-toolchain=${RUST_VERSION}
 source $HOME/.cargo/env
-sudo apt install rustc cargo
+sudo apt install -y rustc cargo
 cargo install bindgen-cli --locked
 
 # Install ROCm
@@ -93,4 +98,4 @@ sudo apt-get autoclean -y
 sudo apt-get autoremove -y
 
 # Default to a login shell
-sudo bash -l
+source $HOME/.bashrc
