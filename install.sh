@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update system and install essential packages
-sudo apt-get update
+sudo apt-get update -y && sudo apt-get upgrade -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates \
     nano \
@@ -49,7 +49,7 @@ sudo apt install rustc cargo
 cargo install bindgen-cli --locked
 
 # Install ROCm
-ROCM_VERSION="5.7.1"
+ROCM_VERSION="5.7.3"
 echo "Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600" | sudo tee /etc/apt/preferences.d/rocm-pin-600
 sudo mkdir -p /etc/apt/keyrings
 sudo wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | sudo gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
