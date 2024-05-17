@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+cd $HOME
 
 # Install Zluda
 git clone --recurse-submodules https://github.com/vosen/ZLUDA.git $HOME/ZLUDA
@@ -23,11 +23,8 @@ export USE_SYSTEM_NCCL=1
 export USE_NCCL=0
 export USE_EXPERIMENTAL_CUDNN_V8_API=OFF
 export DISABLE_ADDMM_CUDA_LT=1
+export USE_ROCM=OFF
 LD_LIBRARY_PATH="$HOME/ZLUDA/target/release:$LD_LIBRARY_PATH" python3 setup.py develop
 
 # Cleanup
 cd $HOME
-
-
-# Default to a login shell
-sudo bash -l
