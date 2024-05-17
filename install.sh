@@ -57,7 +57,6 @@ echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     rocminfo \
-    rocm-smi \
     rocm-gdb \
     rocprofiler \
     rocm-smi-lib \
