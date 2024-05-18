@@ -58,7 +58,7 @@ Replace `<ZLUDA_DIRECTORY>` with the path to the `target/release` subdirectory.
 To verify the installation using Docker, run the following command:
 
 ```sh
-docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 8G -v ~/code/torch-test.py:/torch-test.py --env HSA_OVERRIDE_GFX_VERSION=10.3.0 rocm/pytorch:$TAG python3 /torch-test.py
+docker run --rm -it --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 8G -v ~/zluda-setup/torch-test.py:/torch-test.py --env HSA_OVERRIDE_GFX_VERSION=10.3.0 rocm/pytorch:$TAG python3 /torch-test.py
 ```
 
 Replace `$TAG` with the appropriate tag for the ROCm PyTorch Docker image.
