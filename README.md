@@ -4,7 +4,7 @@ This repository contains setup instructions for running CUDA on AMD GPUs using Z
 
 # Project Setup Instructions
 
-## SETUP
+## NATIVE SETUP
 
 ### Step 1: Grant Permissions
 To give the necessary permissions, run:
