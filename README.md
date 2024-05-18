@@ -42,20 +42,23 @@ docker build -t your_image_name .
 Feel free to replace `your_image_name` with a preferred name for your Docker image.
 
 
-VERIFY INSTALLATION
 
-Native Setup
+## VERIFY INSTALLATION
 
+### Native Setup
 To verify the installation using the command line:
 
+```sh
 LD_LIBRARY_PATH="<ZLUDA_DIRECTORY>:$LD_LIBRARY_PATH" python3 torch-test.py
+```
 
-Replace <ZLUDA_DIRECTORY> with the path to the target/release subdirectory.
+Replace `<ZLUDA_DIRECTORY>` with the path to the `target/release` subdirectory.
 
-Docker Setup
-
+### Docker Setup
 To verify the installation using Docker, run the following command:
 
+```sh
 docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 8G -v ~/code/torch-test.py:/torch-test.py --env HSA_OVERRIDE_GFX_VERSION=10.3.0 rocm/pytorch:$TAG python3 /torch-test.py
+```
 
-Replace $TAG with the appropriate tag for the ROCm PyTorch Docker image.
+Replace `$TAG` with the appropriate tag for the ROCm PyTorch Docker image.
