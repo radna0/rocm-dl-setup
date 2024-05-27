@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Update system and install essential packages
-sudo apt-get update -y && sudo apt-get upgrade -y
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+sudo apt update -y && sudo apt upgrade -y
+sudo DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     ca-certificates \
     nano \
     wget \
@@ -18,7 +18,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 
 
 
-# Install ROCm
+# Install ROCM
 
 sudo apt update
 wget http://repo.radeon.com/amdgpu-install/23.40.2/ubuntu/jammy/amdgpu-install_6.0.60002-1_all.deb
@@ -45,8 +45,8 @@ source $HOME/.bashrc
 # Cleanup
 cd $HOME
 sudo rm -rf Miniconda3-latest-Linux-x86_64.sh amdgpu-install_6.0.60002-1_all.deb
-sudo apt-get autoclean -y
-sudo apt-get autoremove -y
+sudo apt autoclean -y
+sudo apt autoremove -y
 
 # Default to a login shell
 source $HOME/.bashrc
