@@ -2,29 +2,20 @@
 
 cd $HOME
 
-# Install Zluda
-git clone --recurse-submodules https://github.com/vosen/ZLUDA.git $HOME/ZLUDA
-cd $HOME/ZLUDA
-cargo xtask --release
+#Installing Pytorch
+pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/rocm5.7
 
 
-# Install PyTorch
-git clone --recursive https://github.com/pytorch/pytorch $HOME/pytorch
-cd $HOME/pytorch
-git submodule sync
-git submodule update --init --recursive
-conda install -y cmake ninja
-pip install -r requirements.txt
-export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-export TORCH_CUDA_ARCH_LIST="6.1+PTX"
-export CUDAARCHS=61
-export CMAKE_CUDA_ARCHITECTURES=61
-export USE_SYSTEM_NCCL=1
-export USE_NCCL=0
-export USE_EXPERIMENTAL_CUDNN_V8_API=OFF
-export DISABLE_ADDMM_CUDA_LT=1
-export USE_ROCM=OFF
-LD_LIBRARY_PATH="$HOME/ZLUDA/target/release:$LD_LIBRARY_PATH" python3 setup.py develop
+
+#Installing Flash Attention
+git clone https://github.com/ROCmSoftwarePlatform/triton.git
+cd triton
+git checkout triton-mlir
+
+cd python
+pip3 install ninja cmake; # build time dependencies
+pip3 install -e .
+
 
 # Cleanup
 cd $HOME
