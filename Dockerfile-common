@@ -1,0 +1,54 @@
+WORKDIR /root
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates \
+    nano \
+    wget \
+    curl \
+    gnupg \
+    ripgrep \
+    ltrace \
+    file \
+    build-essential \
+    git \
+    cmake \
+    ninja-build \
+
+
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    chmod +x Miniconda3-latest-Linux-x86_64.sh && \
+    ./Miniconda3-latest-Linux-x86_64.sh -b -p /root/miniconda3 && \
+    echo 'export PATH="/root/miniconda3:$PATH"' >> /root/.bashrc && \
+    /root/miniconda3/bin/conda init bash && \
+    /root/miniconda3/bin/conda --version
+
+
+#Installing Pytorch
+RUN pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/rocm5.7
+
+# Clone llvm-project repository
+RUN git clone https://github.com/llvm/llvm-project.git
+
+# Set up build directory and configure llvm-project
+WORKDIR /llvm-project/build
+RUN cmake -G Ninja ../llvm \
+    -DLLVM_ENABLE_PROJECTS=mlir \
+    -DLLVM_BUILD_EXAMPLES=ON \
+    -DLLVM_TARGETS_TO_BUILD="Native;NVPTX;AMDGPU" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_ASSERTIONS=ON \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DLLVM_ENABLE_LLD=ON \
+    -DLLVM_CCACHE_BUILD=ON
+
+
+WORKDIR /root
+# Cleanup
+RUN rm -f Miniconda3-latest-Linux-x86_64.sh && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y
+
+
+# Default to a login shell
+CMD ["bash", "-l"]
