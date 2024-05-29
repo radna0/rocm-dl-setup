@@ -1,3 +1,4 @@
+
 WORKDIR /root
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -14,6 +15,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     cmake \
     ninja-build \
 
+RUN wget http://repo.radeon.com/amdgpu-install/23.40.2/ubuntu/jammy/amdgpu-install_6.0.60002-1_all.deb && \
+    apt-get install -y ./amdgpu-install_6.0.60002-1_all.deb && \
+    rm amdgpu-install_6.0.60002-1_all.deb
+
+RUN DEBIAN_FRONTEND=noninteractive amdgpu-install -y --accept-eula --usecase=graphics,rocm,hip,hiplibsdk 
+
+
 
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -23,15 +31,21 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     /root/miniconda3/bin/conda init bash && \
     /root/miniconda3/bin/conda --version
 
-
 #Installing Pytorch
-RUN pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/rocm5.7
+RUN . ~/.bashrc && \
+    pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/rocm5.7
+
+RUN git clone https://github.com/radna0/rocm-dl-setup.git
+
 
 # Clone llvm-project repository
 RUN git clone https://github.com/llvm/llvm-project.git
-
+RUN apt-get install -y clang lld
+RUN . ~/.bashrc && \
+    conda install -c conda-forge gcc=12.1.0
 # Set up build directory and configure llvm-project
-WORKDIR /llvm-project/build
+RUN mkdir ./llvm-project/build
+WORKDIR ./llvm-project/build
 RUN cmake -G Ninja ../llvm \
     -DLLVM_ENABLE_PROJECTS=mlir \
     -DLLVM_BUILD_EXAMPLES=ON \
@@ -39,8 +53,19 @@ RUN cmake -G Ninja ../llvm \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_ENABLE_ASSERTIONS=ON \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    -DLLVM_ENABLE_LLD=ON \
-    -DLLVM_CCACHE_BUILD=ON
+    -DLLVM_ENABLE_LLD=ON 
+
+RUN cmake --build . --target check-mlir
+
+WORKDIR /root
+RUN git clone https://github.com/ROCmSoftwarePlatform/triton.git
+WORKDIR ./triton
+RUN git checkout triton-mlir
+
+WORKDIR ./python
+RUN pip3 install ninja cmake && \
+    pip3 install .
+
 
 
 WORKDIR /root
@@ -48,6 +73,7 @@ WORKDIR /root
 RUN rm -f Miniconda3-latest-Linux-x86_64.sh && \
     apt-get autoclean -y && \
     apt-get autoremove -y
+
 
 
 # Default to a login shell
