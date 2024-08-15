@@ -1,6 +1,6 @@
 export DEBIAN_FRONTEND=noninteractive
 
-sudo apt update
+sudo apt-get update -y
 sudo apt-get install software-properties-common -y
 
 DEBIAN_FRONTEND=noninteractive sudo add-apt-repository ppa:deadsnakes/ppa -y
