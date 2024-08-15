@@ -20,6 +20,8 @@ sudo apt-get install -y libgl1 libglib2.0-0 google-perftools
 
 
 # EasyAnimate
+rm -rf EasyAnimate
+
 sudo git clone -b TPU https://github.com/radna0/EasyAnimate.git
 sudo chmod -R 777 EasyAnimate
 
