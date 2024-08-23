@@ -33,10 +33,10 @@ mkdir models/Diffusion_Transformer
 mkdir models/Motion_Module
 mkdir models/Personalized_Model
 
-wget https://pai-aigc-photog.oss-cn-hangzhou.aliyuncs.com/easyanimate/Diffusion_Transformer/EasyAnimateV3-XL-2-InP-960x960.tar -O models/Diffusion_Transformer/EasyAnimateV3-XL-2-InP-960x960.tar
+wget https://pai-aigc-photog.oss-cn-hangzhou.aliyuncs.com/easyanimate/Diffusion_Transformer/EasyAnimateV4-XL-2-InP.tar.gz -O models/Diffusion_Transformer/EasyAnimateV4-XL-2-InP.tar.gz
 
 cd models/Diffusion_Transformer/
-tar -xvf EasyAnimateV3-XL-2-InP-960x960.tar
+tar -zxvf EasyAnimateV4-XL-2-InP.tar.gz
 
 # Video Caption
 pip install -r requirements.txt
